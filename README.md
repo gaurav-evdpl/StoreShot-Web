@@ -66,51 +66,6 @@ StoreShot-Web/
 
 ---
 
-## 🚀 Getting Started
-
-### Local Development
-
-No package manager (`npm` or `yarn`) is required. You can preview the project locally using any local web server or by opening `index.html` directly in your browser.
-
-```bash
-# Option 1: Using Python 3 built-in HTTP server
-python3 -m http.server 8000
-
-# Option 2: Using Node.js npx serve
-npx serve .
-
-# Option 3: Using VS Code / IDE Live Server
-# Right click `index.html` -> "Open with Live Server"
-```
-
-Once running, navigate to `http://localhost:8000` in your web browser.
-
----
-
-## 🌐 Deployment
-
-The repository is pre-configured for instant deployment on **Vercel**, **GitHub Pages**, **Netlify**, or **Cloudflare Pages**.
-
-### Vercel (`vercel.json`)
-`vercel.json` is included to provide clean routing without `.html` extensions:
-```json
-{
-  "cleanUrls": true,
-  "trailingSlash": false
-}
-```
-
----
-
-## 📱 Browser Compatibility
-
-StoreShot Studio Web is designed and optimized for all modern web browsers:
-- **Google Chrome** / Chromium-based browsers (Edge, Brave, Opera)
-- **Apple Safari** (macOS, iOS, iPadOS)
-- **Mozilla Firefox**
-
----
-
 ## 📄 License
 
 &copy; StoreShot Studio. All rights reserved. Available for personal and portfolio use.
