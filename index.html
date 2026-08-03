@@ -34,13 +34,200 @@
         </div>
         <div class="hero-note"><span class="check">✓</span> Built for iPhone · Export-ready in seconds</div>
 
-        <div class="studio-window" aria-label="StoreShot Studio editor preview">
-          <div class="window-bar"><div class="traffic"><b></b><b></b><b></b></div><div class="window-title">StoreShot Studio <small>● Saved</small></div><div class="window-more">•••</div></div>
+        <div class="studio-window" id="studio-window" aria-label="StoreShot Studio editor preview">
+          <div class="window-bar">
+            <div class="traffic">
+              <button class="traffic-btn traffic-red" id="traffic-reset" title="Reset Canvas" aria-label="Reset"></button>
+              <button class="traffic-btn traffic-yellow" id="traffic-theme" title="Cycle App Mockup Screen" aria-label="Cycle Screen"></button>
+              <button class="traffic-btn traffic-green" id="traffic-expand" title="Toggle Studio Focus Mode" aria-label="Expand Studio"></button>
+            </div>
+            <div class="window-title">
+              <span class="app-icon-mini">S</span>
+              <span class="project-name-edit" id="project-name-edit" contenteditable="true" spellcheck="false" title="Click to rename project">Untitled project</span>
+              <small class="save-status" id="save-status">● Saved</small>
+            </div>
+            <div class="window-controls-right">
+              <span class="window-badge-pro">PRO STUDIO</span>
+            </div>
+          </div>
           <div class="editor">
-            <aside class="editor-sidebar"><div class="sidebar-logo">S</div><span class="tool active">▣</span><span class="tool">▧</span><span class="tool">T</span><span class="tool">✦</span><span class="tool">◈</span><span class="sidebar-bottom">?</span></aside>
-            <section class="layers"><div class="panel-heading">Layers <button>＋</button></div><div class="layer selected"><span class="layer-art gradient-art"></span><span><b>Product preview</b><small>iPhone 16 Pro</small></span><i>◉</i></div><div class="layer"><span class="layer-art title-art">Aa</span><span><b>Headline</b><small>Create with ease</small></span><i>◉</i></div><div class="layer"><span class="layer-art bg-art"></span><span><b>Background</b><small>Electric violet</small></span><i>◉</i></div><div class="layer"><span class="layer-art shadow-art"></span><span><b>Device shadow</b><small>Soft · 32%</small></span><i>◉</i></div></section>
-            <section class="canvas"><div class="canvas-top"><span>Untitled project</span><div><button>↶</button><button>↷</button><button class="share">Export</button></div></div><div class="artboard"><div class="art-noise"></div><div class="headline-preview">Make it<br /><strong>remarkable.</strong></div><div class="phone"><div class="phone-camera"></div><div class="phone-screen"><div class="app-top"><span>9:41</span><b>myday</b><span>•••</span></div><div class="greeting">Good morning,<br /><strong>Alex.</strong></div><div class="ring"><span>72<small>%</small></span></div><div class="app-card"><small>TODAY'S FOCUS</small><b>Ship the update</b><span>↗</span></div><div class="app-tabs"><span>Home</span><span>Focus</span><span>Plan</span></div></div></div><div class="art-tag">✦ StoreShot</div></div><div class="canvas-footer"><span>⌘ + scroll to zoom</span><b>− &nbsp; 100% &nbsp; +</b></div></section>
-            <aside class="inspector"><div class="inspector-title">Design <span>···</span></div><div class="field-label">CANVAS</div><div class="segmented"><b>iPhone</b><span>Android</span></div><div class="field-label">BACKGROUND</div><div class="color-field"><i></i><span>Electric violet</span><b>#6C5CE7</b></div><div class="field-label">FRAME</div><div class="frame-row"><div class="frame-option chosen"><span>▯</span><small>Modern</small></div><div class="frame-option"><span>▢</span><small>Classic</small></div></div><div class="field-label">EXPORT</div><div class="export-row"><span>App Store</span><b>6.7 in</b></div><button class="export-button"><span>Export screenshot</span><span class="export-btn-arrow" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button></aside>
+            <aside class="editor-sidebar" aria-label="Studio Tools">
+              <div class="sidebar-logo" title="StoreShot Studio">S</div>
+              <button class="tool active" data-tool="design" title="Design & Layers (L)">▣</button>
+              <button class="tool" data-tool="templates" title="One-Click Templates (T)">▧</button>
+              <button class="tool" data-tool="typography" title="Typography & Copy (A)">T</button>
+              <button class="tool" data-tool="mockups" title="App UI Mockup Screen (M)">✦</button>
+              <button class="tool" data-tool="device" title="3D Device & Framing (D)">◈</button>
+              <button class="sidebar-bottom" id="btn-studio-info" title="Studio Shortcuts & Tips">?</button>
+            </aside>
+            <section class="layers" id="layers-panel">
+              <div class="panel-heading">
+                <span id="layers-panel-title">Layers</span>
+                <button class="btn-add-layer" id="btn-add-layer" title="Add Layer / Preset" aria-label="Add Layer">＋</button>
+              </div>
+              <div class="layers-list" id="layers-list">
+                <div class="layer selected" data-layer="preview" tabindex="0" role="button">
+                  <span class="layer-art gradient-art">📱</span>
+                  <span><b>Product preview</b><small id="layer-device-name">iPhone 16 Pro</small></span>
+                  <button class="layer-eye" data-toggle="preview" title="Toggle layer visibility" aria-label="Toggle Product preview">◉</button>
+                </div>
+                <div class="layer" data-layer="headline" tabindex="0" role="button">
+                  <span class="layer-art title-art">Aa</span>
+                  <span><b>Headline</b><small id="layer-headline-text">Make it remarkable.</small></span>
+                  <button class="layer-eye" data-toggle="headline" title="Toggle layer visibility" aria-label="Toggle Headline">◉</button>
+                </div>
+                <div class="layer" data-layer="tagline" tabindex="0" role="button">
+                  <span class="layer-art tag-art">✦</span>
+                  <span><b>Tagline Badge</b><small id="layer-tagline-text">✦ StoreShot</small></span>
+                  <button class="layer-eye" data-toggle="tagline" title="Toggle layer visibility" aria-label="Toggle Tagline">◉</button>
+                </div>
+                <div class="layer" data-layer="background" tabindex="0" role="button">
+                  <span class="layer-art bg-art"></span>
+                  <span><b>Background</b><small id="layer-bg-name">Electric violet</small></span>
+                  <button class="layer-eye" data-toggle="background" title="Toggle layer visibility" aria-label="Toggle Background">◉</button>
+                </div>
+                <div class="layer" data-layer="shadow" tabindex="0" role="button">
+                  <span class="layer-art shadow-art"></span>
+                  <span><b>Device shadow</b><small id="layer-shadow-name">Soft · 32%</small></span>
+                  <button class="layer-eye" data-toggle="shadow" title="Toggle layer visibility" aria-label="Toggle Shadow">◉</button>
+                </div>
+              </div>
+              <div class="templates-list" id="templates-list" style="display:none;">
+                <div class="panel-subhead">PRESET TEMPLATES</div>
+                <button class="tpl-card active" data-template="electric" type="button">
+                  <span class="tpl-swatch tpl-electric"></span>
+                  <div><b>Electric Launch</b><small>Angled iPhone · Bold</small></div>
+                </button>
+                <button class="tpl-card" data-template="obsidian" type="button">
+                  <span class="tpl-swatch tpl-obsidian"></span>
+                  <div><b>Obsidian Dark</b><small>Center Frame · Finance</small></div>
+                </button>
+                <button class="tpl-card" data-template="ocean" type="button">
+                  <span class="tpl-swatch tpl-ocean"></span>
+                  <div><b>Ocean Breeze</b><small>Cyan Tilt · Habit UI</small></div>
+                </button>
+                <button class="tpl-card" data-template="sunset" type="button">
+                  <span class="tpl-swatch tpl-sunset"></span>
+                  <div><b>Sunset Horizon</b><small>Rose Glow · Music UI</small></div>
+                </button>
+                <button class="tpl-card" data-template="mint" type="button">
+                  <span class="tpl-swatch tpl-mint"></span>
+                  <div><b>Cyber Mint</b><small>Pixel Frame · Fitness</small></div>
+                </button>
+              </div>
+            </section>
+            <section class="canvas">
+              <div class="canvas-top">
+                <div class="canvas-top-meta">
+                  <span class="canvas-badge-dim" id="canvas-dim-badge">1290 × 2796</span>
+                  <span class="canvas-badge-device" id="canvas-device-badge">iPhone 16 Pro</span>
+                </div>
+                <div class="canvas-top-tools">
+                  <button id="btn-undo" title="Undo (Cmd+Z)" aria-label="Undo">↶</button>
+                  <button id="btn-redo" title="Redo (Cmd+Y)" aria-label="Redo">↷</button>
+                  <button id="btn-recenter" class="btn-recenter" title="Center device (Space)" aria-label="Center device">⌖</button>
+                  <button class="share" id="btn-quick-export">Export</button>
+                </div>
+              </div>
+              <div class="canvas-viewport" id="canvas-viewport">
+                <div class="artboard" id="artboard">
+                  <div class="art-noise"></div>
+                  <div class="headline-preview" id="headline-preview" contenteditable="true" spellcheck="false" aria-label="Editable screenshot headline">Make it<br /><strong>remarkable.</strong></div>
+                  <div class="phone" id="phone" tabindex="0" role="region" aria-label="Interactive Phone Mockup">
+                    <div class="phone-camera"></div>
+                    <div class="phone-screen" id="phone-screen">
+                      <!-- Habit Tracker Mockup -->
+                      <div class="app-ui app-ui-habits active">
+                        <div class="app-top"><span>9:41</span><b>myday</b><span>•••</span></div>
+                        <div class="greeting">Good morning,<br /><strong>Alex.</strong></div>
+                        <div class="ring" id="interactive-ring" title="Click to complete progress!">
+                          <span id="ring-percent">72<small>%</small></span>
+                        </div>
+                        <div class="app-card" id="interactive-task" title="Click to toggle completion!">
+                          <small>TODAY'S FOCUS</small>
+                          <b id="task-title">Ship the update</b>
+                          <span class="task-icon" id="task-icon">↗</span>
+                        </div>
+                        <div class="app-tabs">
+                          <span class="active">Home</span><span>Focus</span><span>Plan</span>
+                        </div>
+                      </div>
+                      <!-- Finance / Crypto Mockup -->
+                      <div class="app-ui app-ui-finance">
+                        <div class="app-top"><span>9:41</span><b>vault.</b><span>•••</span></div>
+                        <div class="vault-hero">
+                          <small>TOTAL BALANCE</small>
+                          <b>$24,580<small>.50</small></b>
+                          <span class="vault-badge">↗ +14.8% this week</span>
+                        </div>
+                        <div class="vault-sparkline">
+                          <div class="vbar" style="height:32%"></div>
+                          <div class="vbar" style="height:52%"></div>
+                          <div class="vbar" style="height:44%"></div>
+                          <div class="vbar" style="height:76%"></div>
+                          <div class="vbar" style="height:62%"></div>
+                          <div class="vbar" style="height:88%"></div>
+                          <div class="vbar active" style="height:96%"></div>
+                        </div>
+                        <div class="vault-actions">
+                          <button type="button">Send</button><button type="button">Deposit</button><button type="button">Trade</button>
+                        </div>
+                      </div>
+                      <!-- Fitness / Steps Mockup -->
+                      <div class="app-ui app-ui-fitness">
+                        <div class="app-top"><span>9:41</span><b>stride.</b><span>⚡ 84%</span></div>
+                        <div class="fit-hero">
+                          <small>TODAY'S STEPS</small>
+                          <b>10,420</b>
+                          <div class="fit-bar"><div class="fit-bar-fill" style="width:84%"></div></div>
+                        </div>
+                        <div class="fit-grid">
+                          <div class="fit-pill"><b>680</b><small>Active kcal</small></div>
+                          <div class="fit-pill"><b>78</b><small>Avg bpm</small></div>
+                        </div>
+                        <div class="app-tabs">
+                          <span class="active">Activity</span><span>Heart</span><span>Trends</span>
+                        </div>
+                      </div>
+                      <!-- Music / Audio Mockup -->
+                      <div class="app-ui app-ui-music">
+                        <div class="app-top"><span>9:41</span><b>wave.</b><span>•••</span></div>
+                        <div class="music-card">
+                          <div class="music-art">♪</div>
+                          <b>Neon Dreams</b>
+                          <small>Aetherial Wave</small>
+                        </div>
+                        <div class="music-wave" id="music-wave">
+                          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+                        </div>
+                        <div class="music-btn-bar">
+                          <button type="button">⏮</button>
+                          <button type="button" class="music-play-btn" id="music-play-btn">❚❚</button>
+                          <button type="button">⏭</button>
+                        </div>
+                      </div>
+                      <!-- Uploaded Screen Container -->
+                      <div class="app-ui app-ui-custom" id="app-ui-custom" style="display:none;">
+                        <img id="custom-screen-img" src="" alt="Custom App Screenshot" />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="art-tag" id="art-tag">✦ StoreShot</div>
+                </div>
+              </div>
+              <div class="canvas-footer">
+                <span id="canvas-hint">Drag phone to reposition · Double-click to center</span>
+                <div class="zoom-bar">
+                  <button type="button" id="btn-zoom-out" aria-label="Zoom out">−</button>
+                  <span id="zoom-text">100%</span>
+                  <button type="button" id="btn-zoom-in" aria-label="Zoom in">+</button>
+                  <button type="button" id="btn-zoom-reset" class="btn-fit">Fit</button>
+                </div>
+              </div>
+            </section>
+            <aside class="inspector" id="inspector">
+              <!-- Dynamically rendered and bound by script.js -->
+            </aside>
           </div>
         </div>
       </section>

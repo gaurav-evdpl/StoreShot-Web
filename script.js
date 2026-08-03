@@ -1,3 +1,7 @@
+// Always start at the top of the page on every load/refresh
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+
 const menuButton = document.querySelector('.menu-button');
 const navLinks = document.querySelector('.nav-links');
 menuButton?.addEventListener('click', () => {
@@ -9,104 +13,893 @@ document.querySelectorAll('.nav-links a').forEach((link) => link.addEventListene
   navLinks.classList.remove('open'); menuButton?.setAttribute('aria-expanded', 'false');
 }));
 document.querySelector('#year').textContent = new Date().getFullYear();
-const studio = document.querySelector('.editor');
+const studio = document.querySelector('#studio-window');
 if (studio) {
-  const layers = Array.from(studio.querySelectorAll('.layer'));
-  const artboard = studio.querySelector('.artboard');
-  const phone = studio.querySelector('.phone');
-  const inspector = studio.querySelector('.inspector');
-  const canvas = studio.querySelector('.canvas');
-  const headline = studio.querySelector('.headline-preview');
-  const topButtons = studio.querySelectorAll('.canvas-top button');
-  let zoom = 1;
-  let selected = 0;
-  let platform = 'iphone';
+  // State Store
+  const state = {
+    projectName: 'Untitled project',
+    activeTool: 'design',
+    selectedLayer: 'preview',
+    hiddenLayers: new Set(),
+    platform: 'iphone', // 'iphone' | 'android'
+    frame: 'modern', // 'modern' | 'classic' | 'titanium'
+    tilt: 'left', // 'dynamic' | 'left' | 'straight' | 'right' | 'perspective'
+    shadow: 'soft', // 'soft' | 'dramatic' | 'glow' | 'none'
+    bgName: 'Electric violet',
+    bgColor: '#6C5CE7',
+    activeTemplate: 'electric',
+    mockupScreen: 'habits', // 'habits' | 'finance' | 'fitness' | 'music' | 'custom'
+    customScreenSrc: null,
+    zoom: 1,
+    offsetX: 0,
+    offsetY: 0,
+    isPlayingMusic: true,
+    ringProgress: 72,
+    taskDone: false
+  };
 
-  function hint(message) {
-    const el = inspector.querySelector('.editor-hint');
-    if (el) el.textContent = message;
+  const history = [];
+  let historyIdx = -1;
+
+  function pushState() {
+    // Snapshot current state
+    const snapshot = {
+      platform: state.platform,
+      frame: state.frame,
+      tilt: state.tilt,
+      shadow: state.shadow,
+      bgName: state.bgName,
+      bgColor: state.bgColor,
+      mockupScreen: state.mockupScreen,
+      customScreenSrc: state.customScreenSrc,
+      offsetX: state.offsetX,
+      offsetY: state.offsetY,
+      headline: headline?.innerHTML || '',
+      tagline: artTag?.textContent || ''
+    };
+    if (historyIdx < history.length - 1) {
+      history.splice(historyIdx + 1);
+    }
+    history.push(JSON.stringify(snapshot));
+    historyIdx = history.length - 1;
+    updateUndoRedoButtons();
   }
-  function selectLayer(index) {
-    selected = index;
-    layers.forEach((layer, i) => layer.classList.toggle('selected', i === index));
-    hint(['Product preview selected. Change the frame or platform.', 'Headline selected. Click the text on the canvas to edit it.', 'Background selected. Choose a color below.', 'Device shadow selected. Drag the phone to reposition it.'][index]);
+
+  function applySnapshot(jsonStr) {
+    if (!jsonStr) return;
+    const snap = JSON.parse(jsonStr);
+    state.platform = snap.platform;
+    state.frame = snap.frame;
+    state.tilt = snap.tilt;
+    state.shadow = snap.shadow;
+    state.bgName = snap.bgName;
+    state.bgColor = snap.bgColor;
+    state.mockupScreen = snap.mockupScreen;
+    state.customScreenSrc = snap.customScreenSrc;
+    state.offsetX = snap.offsetX;
+    state.offsetY = snap.offsetY;
+    if (headline) headline.innerHTML = snap.headline;
+    if (artTag) artTag.textContent = snap.tagline;
+    renderAll();
   }
-  layers.forEach((layer, index) => {
-    layer.tabIndex = 0;
-    layer.setAttribute('role', 'button');
-    layer.addEventListener('click', () => selectLayer(index));
-    layer.addEventListener('keydown', (event) => {
-      if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); selectLayer(index); }
+
+  // DOM Elements
+  const artboard = studio.querySelector('#artboard');
+  const phone = studio.querySelector('#phone');
+  const headline = studio.querySelector('#headline-preview');
+  const artTag = studio.querySelector('#art-tag');
+  const layersList = studio.querySelector('#layers-list');
+  const templatesList = studio.querySelector('#templates-list');
+  const layersTitle = studio.querySelector('#layers-panel-title');
+  const inspector = studio.querySelector('#inspector');
+  const saveStatus = studio.querySelector('#save-status');
+  const projectNameEdit = studio.querySelector('#project-name-edit');
+  const zoomText = studio.querySelector('#zoom-text');
+  const canvasHint = studio.querySelector('#canvas-hint');
+  const dimBadge = studio.querySelector('#canvas-dim-badge');
+  const deviceBadge = studio.querySelector('#canvas-device-badge');
+  const btnUndo = studio.querySelector('#btn-undo');
+  const btnRedo = studio.querySelector('#btn-redo');
+
+  const paletteColors = {
+    '#6C5CE7': 'Electric violet',
+    '#0E8CCF': 'Ocean cyan',
+    '#E15F8D': 'Rose pink',
+    '#20A780': 'Cyber mint',
+    '#E0A82E': 'Sunburst gold',
+    '#181724': 'Midnight noir'
+  };
+
+  const templates = {
+    electric: {
+      name: 'Electric Launch',
+      bg: '#6C5CE7',
+      bgName: 'Electric violet',
+      platform: 'iphone',
+      frame: 'modern',
+      tilt: 'left',
+      shadow: 'soft',
+      screen: 'habits',
+      headline: 'Make it<br /><strong>remarkable.</strong>',
+      tagline: '✦ StoreShot'
+    },
+    obsidian: {
+      name: 'Obsidian Dark',
+      bg: '#181724',
+      bgName: 'Midnight noir',
+      platform: 'iphone',
+      frame: 'titanium',
+      tilt: 'straight',
+      shadow: 'dramatic',
+      screen: 'finance',
+      headline: 'Track wealth.<br /><strong>Seamlessly.</strong>',
+      tagline: '★ 4.9 on App Store'
+    },
+    ocean: {
+      name: 'Ocean Breeze',
+      bg: '#0E8CCF',
+      bgName: 'Ocean cyan',
+      platform: 'iphone',
+      frame: 'modern',
+      tilt: 'dynamic',
+      shadow: 'glow',
+      screen: 'habits',
+      headline: 'Build habits<br /><strong>that stick.</strong>',
+      tagline: '⚡ Version 2.0'
+    },
+    sunset: {
+      name: 'Sunset Horizon',
+      bg: '#E15F8D',
+      bgName: 'Rose pink',
+      platform: 'iphone',
+      frame: 'classic',
+      tilt: 'right',
+      shadow: 'soft',
+      screen: 'music',
+      headline: 'Sound meets<br /><strong>pure clarity.</strong>',
+      tagline: '✦ Editor’s Choice'
+    },
+    mint: {
+      name: 'Cyber Mint',
+      bg: '#20A780',
+      bgName: 'Cyber mint',
+      platform: 'android',
+      frame: 'modern',
+      tilt: 'left',
+      shadow: 'glow',
+      screen: 'fitness',
+      headline: 'Push limits.<br /><strong>Every day.</strong>',
+      tagline: '🔥 Google Play Top'
+    }
+  };
+
+  function triggerSaveStatus() {
+    if (!saveStatus) return;
+    saveStatus.textContent = '● Saving...';
+    saveStatus.classList.add('saving');
+    setTimeout(() => {
+      saveStatus.textContent = '● Saved';
+      saveStatus.classList.remove('saving');
+    }, 450);
+  }
+
+  function hint(message, isHighlight = false) {
+    if (!canvasHint) return;
+    canvasHint.textContent = message;
+    canvasHint.classList.toggle('highlight', isHighlight);
+    const inspectorHint = inspector?.querySelector('.editor-hint');
+    if (inspectorHint) {
+      inspectorHint.textContent = message;
+      inspectorHint.classList.toggle('highlight', isHighlight);
+    }
+  }
+
+  function updateUndoRedoButtons() {
+    if (btnUndo) btnUndo.style.opacity = historyIdx > 0 ? '1' : '0.4';
+    if (btnRedo) btnRedo.style.opacity = historyIdx < history.length - 1 ? '1' : '0.4';
+  }
+
+  // Render Visual Canvas State
+  function renderCanvas() {
+    // Background gradient calculation
+    const hex = state.bgColor;
+    const r = parseInt(hex.slice(1, 3), 16) || 108;
+    const g = parseInt(hex.slice(3, 5), 16) || 92;
+    const b = parseInt(hex.slice(5, 7), 16) || 231;
+    const darkR = Math.max(8, Math.floor(r * 0.4));
+    const darkG = Math.max(8, Math.floor(g * 0.35));
+    const darkB = Math.max(16, Math.floor(b * 0.6));
+    const lightR = Math.min(255, Math.floor(r * 1.3 + 40));
+    const lightG = Math.min(255, Math.floor(g * 1.1 + 20));
+    const lightB = Math.min(255, Math.floor(b * 1.0 + 30));
+
+    artboard.style.background = `linear-gradient(150deg, rgb(${darkR},${darkG},${darkB}), ${hex} 48%, rgb(${lightR},${lightG},${lightB}))`;
+    phone.style.setProperty('--glow-color', `rgba(${r},${g},${b},0.65)`);
+
+    // Frame styling
+    phone.classList.toggle('classic-frame', state.frame === 'classic');
+    phone.classList.toggle('titanium-frame', state.frame === 'titanium');
+    phone.classList.toggle('android-phone', state.platform === 'android');
+    artboard.classList.toggle('android-canvas', state.platform === 'android');
+
+    // Tilt angle
+    phone.classList.remove('tilt-dynamic', 'tilt-left', 'tilt-straight', 'tilt-right', 'tilt-perspective');
+    phone.classList.add(`tilt-${state.tilt}`);
+
+    // Shadow
+    phone.classList.remove('shadow-soft', 'shadow-dramatic', 'shadow-glow', 'shadow-none');
+    phone.classList.add(`shadow-${state.shadow}`);
+
+    // Position translate
+    phone.style.translate = `${state.offsetX}px ${state.offsetY}px`;
+
+    // Layer visibility
+    phone.style.display = state.hiddenLayers.has('preview') ? 'none' : '';
+    if (headline) headline.style.display = state.hiddenLayers.has('headline') ? 'none' : '';
+    if (artTag) artTag.style.display = state.hiddenLayers.has('tagline') ? 'none' : '';
+    const shadowArt = studio.querySelector('.art-noise');
+    if (shadowArt) shadowArt.style.display = state.hiddenLayers.has('shadow') ? 'none' : '';
+
+    // Mockup Screen UI
+    studio.querySelectorAll('.phone-screen .app-ui').forEach(ui => ui.classList.remove('active'));
+    const activeUi = studio.querySelector(`.phone-screen .app-ui-${state.mockupScreen}`);
+    if (activeUi) {
+      activeUi.classList.add('active');
+    }
+
+    // Platform badges
+    if (dimBadge) {
+      dimBadge.textContent = state.platform === 'android' ? '1080 × 1920' : '1290 × 2796';
+    }
+    if (deviceBadge) {
+      deviceBadge.textContent = state.platform === 'android' ? 'Pixel 9 Pro' : (state.frame === 'titanium' ? 'iPhone Titanium' : (state.frame === 'classic' ? 'iPhone Classic' : 'iPhone 16 Pro'));
+    }
+
+    // Layers panel updates
+    const deviceName = studio.querySelector('#layer-device-name');
+    if (deviceName) {
+      deviceName.textContent = state.platform === 'android' ? 'Pixel 9 Pro' : 'iPhone 16 Pro';
+    }
+    const bgNameEl = studio.querySelector('#layer-bg-name');
+    if (bgNameEl) {
+      bgNameEl.textContent = state.bgName;
+    }
+    const shadowNameEl = studio.querySelector('#layer-shadow-name');
+    if (shadowNameEl) {
+      shadowNameEl.textContent = state.shadow.charAt(0).toUpperCase() + state.shadow.slice(1);
+    }
+    const headlineLayerText = studio.querySelector('#layer-headline-text');
+    if (headlineLayerText && headline) {
+      headlineLayerText.textContent = headline.innerText.replace(/\n/g, ' ').slice(0, 22) + '...';
+    }
+
+    // Update zoom display
+    artboard.style.transform = `scale(${state.zoom})`;
+    if (zoomText) zoomText.textContent = `${Math.round(state.zoom * 100)}%`;
+  }
+
+  // Render Inspector Panel based on active context
+  function renderInspector() {
+    if (!inspector) return;
+
+    let html = `
+      <div class="inspector-title">
+        <span>Inspector</span>
+        <span class="inspector-tab-badge">${state.activeTool.toUpperCase()}</span>
+      </div>
+    `;
+
+    // 1. CANVAS & PLATFORM
+    html += `
+      <div class="insp-group">
+        <span class="field-label">DEVICE & STORE</span>
+        <div class="segmented" role="group">
+          <button class="insp-btn-platform ${state.platform === 'iphone' ? 'chosen' : ''}" data-platform="iphone">iPhone (6.7")</button>
+          <button class="insp-btn-platform ${state.platform === 'android' ? 'chosen' : ''}" data-platform="android">Android (Play)</button>
+        </div>
+      </div>
+    `;
+
+    // 2. BACKGROUND & PALETTE
+    html += `
+      <div class="insp-group">
+        <span class="field-label">BACKGROUND COLOR</span>
+        <label class="color-field" title="Click to pick custom color">
+          <input type="color" id="insp-color-input" value="${state.bgColor}" aria-label="Custom background color">
+          <i style="background:${state.bgColor}"></i>
+          <span>${state.bgName}</span>
+          <b>${state.bgColor}</b>
+        </label>
+        <div class="palette">
+          ${Object.keys(paletteColors).map(color => `
+            <button class="palette-swatch ${state.bgColor.toUpperCase() === color.toUpperCase() ? 'active' : ''}" 
+                    data-color="${color}" 
+                    title="${paletteColors[color]}" 
+                    style="background:${color}"></button>
+          `).join('')}
+        </div>
+      </div>
+    `;
+
+    // 3. MOCKUP APP UI
+    html += `
+      <div class="insp-group">
+        <span class="field-label">APP SCREEN MOCKUP</span>
+        <div class="mockup-chips">
+          <button class="chip-btn insp-chip-screen ${state.mockupScreen === 'habits' ? 'chosen' : ''}" data-screen="habits">Habit</button>
+          <button class="chip-btn insp-chip-screen ${state.mockupScreen === 'finance' ? 'chosen' : ''}" data-screen="finance">Vault</button>
+          <button class="chip-btn insp-chip-screen ${state.mockupScreen === 'fitness' ? 'chosen' : ''}" data-screen="fitness">Stride</button>
+          <button class="chip-btn insp-chip-screen ${state.mockupScreen === 'music' ? 'chosen' : ''}" data-screen="music">Audio</button>
+        </div>
+        <label class="btn-upload-screen" title="Upload custom screenshot PNG/JPG">
+          <input type="file" id="insp-file-upload" accept="image/*" style="display:none">
+          <span>📁 Upload Screenshot</span>
+        </label>
+      </div>
+    `;
+
+    // 4. 3D DEVICE FRAME & ANGLE
+    html += `
+      <div class="insp-group">
+        <span class="field-label">DEVICE FRAME & TILT</span>
+        <div class="segmented">
+          <button class="insp-btn-frame ${state.frame === 'modern' ? 'chosen' : ''}" data-frame="modern">Modern</button>
+          <button class="insp-btn-frame ${state.frame === 'classic' ? 'chosen' : ''}" data-frame="classic">Classic</button>
+          <button class="insp-btn-frame ${state.frame === 'titanium' ? 'chosen' : ''}" data-frame="titanium">Titanium</button>
+        </div>
+        <div class="angle-chips">
+          <button class="chip-btn insp-chip-tilt ${state.tilt === 'dynamic' ? 'chosen' : ''}" data-tilt="dynamic" title="-14° Dynamic">-14°</button>
+          <button class="chip-btn insp-chip-tilt ${state.tilt === 'left' ? 'chosen' : ''}" data-tilt="left" title="-8° Natural">-8°</button>
+          <button class="chip-btn insp-chip-tilt ${state.tilt === 'straight' ? 'chosen' : ''}" data-tilt="straight" title="0° Straight">0°</button>
+          <button class="chip-btn insp-chip-tilt ${state.tilt === 'right' ? 'chosen' : ''}" data-tilt="right" title="+8° Counter">+8°</button>
+        </div>
+      </div>
+    `;
+
+    // 5. SHADOW & DEPTH
+    html += `
+      <div class="insp-group">
+        <span class="field-label">3D SHADOW & GLOW</span>
+        <div class="mockup-chips">
+          <button class="chip-btn insp-chip-shadow ${state.shadow === 'soft' ? 'chosen' : ''}" data-shadow="soft">Soft</button>
+          <button class="chip-btn insp-chip-shadow ${state.shadow === 'dramatic' ? 'chosen' : ''}" data-shadow="dramatic">Deep</button>
+          <button class="chip-btn insp-chip-shadow ${state.shadow === 'glow' ? 'chosen' : ''}" data-shadow="glow">Glow</button>
+          <button class="chip-btn insp-chip-shadow ${state.shadow === 'none' ? 'chosen' : ''}" data-shadow="none">None</button>
+        </div>
+      </div>
+    `;
+
+    // 6. EXPORT
+    html += `
+      <div class="insp-group">
+        <span class="field-label">EXPORT SETTINGS</span>
+        <div class="export-row">
+          <span>Target</span>
+          <b>${state.platform === 'android' ? 'Google Play (PNG)' : 'App Store (6.7″)'}</b>
+        </div>
+        <button class="export-button" id="insp-btn-export">
+          <span>Export screenshot</span>
+          <span class="export-btn-arrow" aria-hidden="true">
+            <svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+        </button>
+      </div>
+      
+    `;
+
+    inspector.innerHTML = html;
+    bindInspectorEvents();
+  }
+
+  function bindInspectorEvents() {
+    if (!inspector) return;
+
+    // Platform toggle
+    inspector.querySelectorAll('.insp-btn-platform').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.platform = btn.dataset.platform;
+        pushState();
+        renderAll();
+        hint(state.platform === 'android' ? 'Switched to Android Google Play canvas' : 'Switched to Apple App Store 6.7″ canvas');
+        triggerSaveStatus();
+      });
+    });
+
+    // Custom Color picker
+    const colorInput = inspector.querySelector('#insp-color-input');
+    if (colorInput) {
+      colorInput.addEventListener('input', (e) => {
+        const val = e.target.value.toUpperCase();
+        state.bgColor = val;
+        state.bgName = paletteColors[val] || 'Custom Gradient';
+        renderCanvas();
+        triggerSaveStatus();
+      });
+      colorInput.addEventListener('change', () => {
+        pushState();
+        renderInspector();
+      });
+    }
+
+    // Palette swatches
+    inspector.querySelectorAll('.palette-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const c = btn.dataset.color;
+        state.bgColor = c;
+        state.bgName = paletteColors[c] || 'Custom';
+        pushState();
+        renderAll();
+        hint(`Applied ${state.bgName} background`);
+        triggerSaveStatus();
+      });
+    });
+
+    // Screen selector
+    inspector.querySelectorAll('.insp-chip-screen').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.mockupScreen = btn.dataset.screen;
+        pushState();
+        renderAll();
+        hint(`Switched app screen to ${btn.textContent}`);
+        triggerSaveStatus();
+      });
+    });
+
+    // File Upload
+    const fileUpload = inspector.querySelector('#insp-file-upload');
+    if (fileUpload) {
+      fileUpload.addEventListener('change', (e) => {
+        const file = e.target.files?.[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            state.customScreenSrc = event.target.result;
+            state.mockupScreen = 'custom';
+            const customImg = studio.querySelector('#custom-screen-img');
+            if (customImg) customImg.src = state.customScreenSrc;
+            pushState();
+            renderAll();
+            hint('Custom screenshot loaded into device mockup!', true);
+            triggerSaveStatus();
+          };
+          reader.readAsDataURL(file);
+        }
+      });
+    }
+
+    // Frame option
+    inspector.querySelectorAll('.insp-btn-frame').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.frame = btn.dataset.frame;
+        pushState();
+        renderAll();
+        hint(`Selected ${btn.textContent} device frame`);
+        triggerSaveStatus();
+      });
+    });
+
+    // Tilt angle
+    inspector.querySelectorAll('.insp-chip-tilt').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.tilt = btn.dataset.tilt;
+        pushState();
+        renderAll();
+        hint(`3D tilt adjusted to ${btn.textContent}`);
+        triggerSaveStatus();
+      });
+    });
+
+    // Shadow depth
+    inspector.querySelectorAll('.insp-chip-shadow').forEach(btn => {
+      btn.addEventListener('click', () => {
+        state.shadow = btn.dataset.shadow;
+        pushState();
+        renderAll();
+        hint(`Shadow depth set to ${btn.textContent}`);
+        triggerSaveStatus();
+      });
+    });
+
+    // Export button
+    const exportBtn = inspector.querySelector('#insp-btn-export');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', handleExportScreenshot);
+    }
+  }
+
+  function renderAll() {
+    renderCanvas();
+    renderInspector();
+  }
+
+  // Sidebar Tool Buttons
+  studio.querySelectorAll('.editor-sidebar .tool').forEach(toolBtn => {
+    toolBtn.addEventListener('click', () => {
+      studio.querySelectorAll('.editor-sidebar .tool').forEach(t => t.classList.remove('active'));
+      toolBtn.classList.add('active');
+      state.activeTool = toolBtn.dataset.tool;
+
+      if (state.activeTool === 'templates') {
+        if (layersList) layersList.style.display = 'none';
+        if (templatesList) templatesList.style.display = 'flex';
+        if (layersTitle) layersTitle.textContent = 'Templates';
+        hint('Choose a one-click designer template.');
+      } else {
+        if (layersList) layersList.style.display = 'flex';
+        if (templatesList) templatesList.style.display = 'none';
+        if (layersTitle) layersTitle.textContent = 'Layers';
+        hint(`${state.activeTool.charAt(0).toUpperCase() + state.activeTool.slice(1)} tool active.`);
+      }
+      renderInspector();
     });
   });
-  const addLayer = studio.querySelector('.panel-heading button');
-  addLayer.addEventListener('click', () => hint('New layers can be added in the full StoreShot app.'));
 
-  inspector.innerHTML = "<div class='inspector-title'>Design <span>···</span></div><div class='field-label'>CANVAS</div><div class='segmented' role='group'><button class='platform chosen' data-platform='iphone'>iPhone</button><button class='platform' data-platform='android'>Android</button></div><div class='field-label'>BACKGROUND</div><label class='color-field'><input type='color' id='background-color' value='#6C5CE7' aria-label='Choose background color'><i></i><span id='background-name'>Electric violet</span><b id='background-hex'>#6C5CE7</b></label><div class='palette'><button data-color='#6C5CE7' aria-label='Electric violet'></button><button data-color='#0E8CCF' aria-label='Ocean blue'></button><button data-color='#E15F8D' aria-label='Rose pink'></button><button data-color='#20A780' aria-label='Mint green'></button></div><div class='field-label'>FRAME</div><div class='frame-row'><button class='frame-option chosen' data-frame='modern'><span>▯</span><small>Modern</small></button><button class='frame-option' data-frame='classic'><span>▢</span><small>Classic</small></button></div><div class='field-label'>EXPORT</div><div class='export-row'><span id='export-store'>App Store</span><b id='export-size'>6.7 in</b></div><button class='export-button' id='export-shot'><span>Export screenshot</span><span class='export-btn-arrow' aria-hidden='true'><svg width='11' height='11' viewBox='0 0 12 12' fill='none' xmlns='http://www.w3.org/2000/svg'><path d='M2.5 6H9.5M6.5 3L9.5 6L6.5 9' stroke='currentColor' stroke-width='1.75' stroke-linecap='round' stroke-linejoin='round'/></svg></span></button><p class='editor-hint' aria-live='polite'>Select a layer to edit it.</p>";
+  // Help Button in Sidebar
+  const infoBtn = studio.querySelector('#btn-studio-info');
+  infoBtn?.addEventListener('click', () => {
+    hint('Shortcuts: Drag phone to move · Double click phone to center · Cmd+Z to undo', true);
+  });
 
-  const names = { '#6C5CE7': 'Electric violet', '#0E8CCF': 'Ocean blue', '#E15F8D': 'Rose pink', '#20A780': 'Mint green' };
-  function background(color) {
-    const rgb = color.match(/[A-Fa-f0-9]{2}/g).map(value => parseInt(value, 16));
-    artboard.style.background = 'linear-gradient(150deg, rgb(' + Math.max(0, rgb[0] - 55) + ',' + Math.max(0, rgb[1] - 55) + ',' + Math.max(0, rgb[2] - 10) + '), ' + color + ' 48%, #e17ba8)';
-    inspector.querySelector('#background-color').value = color;
-    inspector.querySelector('#background-name').textContent = names[color] || 'Custom color';
-    inspector.querySelector('#background-hex').textContent = color;
-    hint('Background updated.');
+  // Layer Item Selection & Visibility Toggles
+  studio.querySelectorAll('.layers-list .layer').forEach(layerEl => {
+    const layerType = layerEl.dataset.layer;
+    layerEl.addEventListener('click', (e) => {
+      if (e.target.closest('.layer-eye')) return;
+      state.selectedLayer = layerType;
+      studio.querySelectorAll('.layers-list .layer').forEach(l => l.classList.remove('selected'));
+      layerEl.classList.add('selected');
+      hint(`Selected ${layerType} layer. Edit in inspector or directly on canvas.`);
+    });
+  });
+
+  studio.querySelectorAll('.layer-eye').forEach(eyeBtn => {
+    eyeBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const target = eyeBtn.dataset.toggle;
+      const layerEl = eyeBtn.closest('.layer');
+      if (state.hiddenLayers.has(target)) {
+        state.hiddenLayers.delete(target);
+        eyeBtn.textContent = '◉';
+        layerEl?.classList.remove('layer-hidden');
+        hint(`Layer "${target}" is now visible.`);
+      } else {
+        state.hiddenLayers.add(target);
+        eyeBtn.textContent = '◎';
+        layerEl?.classList.add('layer-hidden');
+        hint(`Layer "${target}" hidden.`);
+      }
+      pushState();
+      renderCanvas();
+      triggerSaveStatus();
+    });
+  });
+
+  // One-Click Template Card Selection
+  studio.querySelectorAll('.tpl-card').forEach(tplBtn => {
+    tplBtn.addEventListener('click', () => {
+      const tplKey = tplBtn.dataset.template;
+      const tpl = templates[tplKey];
+      if (!tpl) return;
+
+      studio.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('active'));
+      tplBtn.classList.add('active');
+
+      state.activeTemplate = tplKey;
+      state.bgColor = tpl.bg;
+      state.bgName = tpl.bgName;
+      state.platform = tpl.platform;
+      state.frame = tpl.frame;
+      state.tilt = tpl.tilt;
+      state.shadow = tpl.shadow;
+      state.mockupScreen = tpl.screen;
+      if (headline) headline.innerHTML = tpl.headline;
+      if (artTag) artTag.textContent = tpl.tagline;
+
+      pushState();
+      renderAll();
+      hint(`Applied template "${tpl.name}"!`, true);
+      triggerSaveStatus();
+    });
+  });
+
+  // Add Layer Button
+  const btnAddLayer = studio.querySelector('#btn-add-layer');
+  btnAddLayer?.addEventListener('click', () => {
+    // Cycle a fun tagline badge or preset headline
+    const presets = ['Make it remarkable.', 'Design at lightspeed.', 'Your product, elevated.', 'Ship 10x faster.'];
+    const currentText = headline?.innerText || '';
+    const nextIdx = (presets.indexOf(currentText) + 1) % presets.length;
+    if (headline) headline.innerHTML = presets[nextIdx].replace(' ', '<br /><strong>') + '</strong>';
+    pushState();
+    renderCanvas();
+    hint('Added custom copy headline preset.', true);
+    triggerSaveStatus();
+  });
+
+  // Traffic Light Buttons
+  const trafficReset = studio.querySelector('#traffic-reset');
+  trafficReset?.addEventListener('click', () => {
+    state.offsetX = 0;
+    state.offsetY = 0;
+    state.zoom = 1;
+    const tpl = templates.electric;
+    state.bgColor = tpl.bg;
+    state.bgName = tpl.bgName;
+    state.platform = 'iphone';
+    state.frame = 'modern';
+    state.tilt = 'left';
+    state.shadow = 'soft';
+    state.mockupScreen = 'habits';
+    if (headline) headline.innerHTML = tpl.headline;
+    if (artTag) artTag.textContent = tpl.tagline;
+    pushState();
+    renderAll();
+    hint('Canvas reset to default state.', true);
+    triggerSaveStatus();
+  });
+
+  const trafficTheme = studio.querySelector('#traffic-theme');
+  trafficTheme?.addEventListener('click', () => {
+    const screens = ['habits', 'finance', 'fitness', 'music'];
+    const currIdx = screens.indexOf(state.mockupScreen);
+    const nextScreen = screens[(currIdx + 1) % screens.length];
+    state.mockupScreen = nextScreen;
+    pushState();
+    renderAll();
+    hint(`Cycled app screen to: ${nextScreen}`, true);
+    triggerSaveStatus();
+  });
+
+  const trafficExpand = studio.querySelector('#traffic-expand');
+  trafficExpand?.addEventListener('click', () => {
+    studio.classList.toggle('focus-mode');
+    hint(studio.classList.contains('focus-mode') ? 'Studio Focus Mode enabled' : 'Studio Normal Mode');
+  });
+
+  // Editable Project Name
+  projectNameEdit?.addEventListener('input', () => {
+    state.projectName = projectNameEdit.textContent.trim() || 'Untitled project';
+    triggerSaveStatus();
+  });
+
+  // Editable Headline & Tagline
+  headline?.addEventListener('input', () => {
+    triggerSaveStatus();
+  });
+  headline?.addEventListener('blur', () => {
+    pushState();
+    renderCanvas();
+  });
+
+  // Zoom Controls
+  function setZoom(next) {
+    state.zoom = Math.max(0.6, Math.min(1.4, Number(next.toFixed(2))));
+    renderCanvas();
   }
-  inspector.querySelector('#background-color').addEventListener('input', event => background(event.target.value.toUpperCase()));
-  inspector.querySelectorAll('.palette button').forEach(button => button.addEventListener('click', () => background(button.dataset.color)));
-  inspector.querySelectorAll('.frame-option').forEach(button => button.addEventListener('click', () => {
-    phone.classList.toggle('classic-frame', button.dataset.frame === 'classic');
-    inspector.querySelectorAll('.frame-option').forEach(item => item.classList.toggle('chosen', item === button));
-    hint(button.dataset.frame === 'classic' ? 'Classic device frame selected.' : 'Modern device frame selected.');
-  }));
-  inspector.querySelectorAll('.platform').forEach(button => button.addEventListener('click', () => {
-    platform = button.dataset.platform;
-    phone.classList.toggle('android-phone', platform === 'android');
-    artboard.classList.toggle('android-canvas', platform === 'android');
-    inspector.querySelectorAll('.platform').forEach(item => item.classList.toggle('chosen', item === button));
-    inspector.querySelector('#export-store').textContent = platform === 'android' ? 'Google Play' : 'App Store';
-    inspector.querySelector('#export-size').textContent = platform === 'android' ? '1080 × 1920' : '6.7 in';
-    studio.querySelector('.layer small').textContent = platform === 'android' ? 'Android device' : 'iPhone 16 Pro';
-    hint(platform === 'android' ? 'Android canvas selected.' : 'iPhone canvas selected.');
-  }));
+  studio.querySelector('#btn-zoom-out')?.addEventListener('click', () => setZoom(state.zoom - 0.1));
+  studio.querySelector('#btn-zoom-in')?.addEventListener('click', () => setZoom(state.zoom + 0.1));
+  studio.querySelector('#btn-zoom-reset')?.addEventListener('click', () => setZoom(1));
 
-  headline.contentEditable = 'true';
-  headline.spellcheck = false;
-  headline.setAttribute('aria-label', 'Editable screenshot headline');
-  headline.addEventListener('focus', () => hint('Edit the headline directly on the canvas.'));
-  function applyZoom(next) {
-    zoom = Math.max(.65, Math.min(1.3, next));
-    artboard.style.transform = 'scale(' + zoom + ')';
-    studio.querySelector('.canvas-footer b span').textContent = Math.round(zoom * 100) + '%';
+  studio.querySelector('.canvas-viewport')?.addEventListener('wheel', (e) => {
+    if (!e.ctrlKey && !e.metaKey) return;
+    e.preventDefault();
+    setZoom(state.zoom + (e.deltaY < 0 ? 0.06 : -0.06));
+  }, { passive: false });
+
+  // Recenter Device Button
+  const btnRecenter = studio.querySelector('#btn-recenter');
+  btnRecenter?.addEventListener('click', () => {
+    state.offsetX = 0;
+    state.offsetY = 0;
+    pushState();
+    renderCanvas();
+    hint('Phone mockup recentered.', true);
+  });
+
+  // Dragging the Phone Mockup
+  let isDragging = false;
+  let startX = 0;
+  let startY = 0;
+
+  phone?.addEventListener('pointerdown', (e) => {
+    isDragging = true;
+    startX = e.clientX;
+    startY = e.clientY;
+    phone.setPointerCapture(e.pointerId);
+    hint('Dragging phone · Release to lock position');
+  });
+
+  phone?.addEventListener('pointermove', (e) => {
+    if (!isDragging) return;
+    const dx = (e.clientX - startX) / state.zoom;
+    const dy = (e.clientY - startY) / state.zoom;
+    state.offsetX += dx;
+    state.offsetY += dy;
+    startX = e.clientX;
+    startY = e.clientY;
+    phone.style.translate = `${state.offsetX}px ${state.offsetY}px`;
+  });
+
+  phone?.addEventListener('pointerup', (e) => {
+    if (isDragging) {
+      isDragging = false;
+      pushState();
+      triggerSaveStatus();
+      hint('Position saved.');
+    }
+  });
+
+  phone?.addEventListener('dblclick', () => {
+    state.offsetX = 0;
+    state.offsetY = 0;
+    pushState();
+    renderCanvas();
+    hint('Phone returned to home center.');
+    triggerSaveStatus();
+  });
+
+  // Interactive Elements inside the Phone Screen
+  // 1. Habit Ring
+  const interactiveRing = studio.querySelector('#interactive-ring');
+  interactiveRing?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.ringProgress = state.ringProgress >= 100 ? 54 : state.ringProgress + 14;
+    const ringPercent = studio.querySelector('#ring-percent');
+    if (ringPercent) {
+      ringPercent.innerHTML = `${state.ringProgress}<small>%</small>`;
+    }
+    interactiveRing.style.borderColor = state.ringProgress >= 100 ? '#4fe0b5' : '#75bccf';
+    hint(`Goal progress: ${state.ringProgress}% complete! 🎉`, true);
+  });
+
+  // 2. Habit Task Card
+  const interactiveTask = studio.querySelector('#interactive-task');
+  interactiveTask?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.taskDone = !state.taskDone;
+    interactiveTask.classList.toggle('completed', state.taskDone);
+    const icon = studio.querySelector('#task-icon');
+    const title = studio.querySelector('#task-title');
+    if (icon) icon.textContent = state.taskDone ? '✓' : '↗';
+    if (title) title.textContent = state.taskDone ? 'Update Shipped!' : 'Ship the update';
+    hint(state.taskDone ? 'Task completed! Good job.' : 'Task reopened.', true);
+  });
+
+  // 3. Audio Play Button
+  const musicPlayBtn = studio.querySelector('#music-play-btn');
+  const musicWave = studio.querySelector('#music-wave');
+  musicPlayBtn?.addEventListener('click', (e) => {
+    e.stopPropagation();
+    state.isPlayingMusic = !state.isPlayingMusic;
+    musicPlayBtn.textContent = state.isPlayingMusic ? '❚❚' : '▶';
+    if (musicWave) {
+      musicWave.querySelectorAll('span').forEach(bar => {
+        bar.style.animationPlayState = state.isPlayingMusic ? 'running' : 'paused';
+      });
+    }
+    hint(state.isPlayingMusic ? 'Playing audio track' : 'Audio paused', true);
+  });
+
+  // Undo / Redo
+  btnUndo?.addEventListener('click', () => {
+    if (historyIdx > 0) {
+      historyIdx--;
+      applySnapshot(history[historyIdx]);
+      updateUndoRedoButtons();
+      hint('Action undone (↶)');
+    }
+  });
+
+  btnRedo?.addEventListener('click', () => {
+    if (historyIdx < history.length - 1) {
+      historyIdx++;
+      applySnapshot(history[historyIdx]);
+      updateUndoRedoButtons();
+      hint('Action redone (↷)');
+    }
+  });
+
+  // Keyboard Shortcuts
+  window.addEventListener('keydown', (e) => {
+    // Ignore if typing in text inputs or contenteditable
+    if (document.activeElement && (document.activeElement.tagName === 'INPUT' || document.activeElement.isContentEditable)) {
+      return;
+    }
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'z') {
+      e.preventDefault();
+      if (e.shiftKey) {
+        btnRedo?.click();
+      } else {
+        btnUndo?.click();
+      }
+    } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'y') {
+      e.preventDefault();
+      btnRedo?.click();
+    } else if (e.key === ' ') {
+      e.preventDefault();
+      btnRecenter?.click();
+    }
+  });
+
+  // Export Screenshot Engine
+  function handleExportScreenshot() {
+    const exportBtns = [studio.querySelector('#btn-quick-export'), studio.querySelector('#insp-btn-export')].filter(Boolean);
+    exportBtns.forEach(btn => {
+      btn.style.filter = 'brightness(1.3)';
+      btn.textContent = 'Exporting...';
+    });
+
+    setTimeout(() => {
+      const title = headline?.innerText.replace(/[<>&]/g, '').split('\n') || ['Make it', 'remarkable.'];
+      const textSvg = title.map((line, idx) => `<tspan x="110" dy="${idx ? 165 : 0}">${line}</tspan>`).join('');
+      const color = state.bgColor;
+      
+      const width = state.platform === 'android' ? 1080 : 1290;
+      const height = state.platform === 'android' ? 1920 : 2796;
+
+      const svgData = `
+        <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+          <defs>
+            <linearGradient id="storeshotBg" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#19152b" />
+              <stop offset="50%" stop-color="${color}" />
+              <stop offset="100%" stop-color="#e17ba8" />
+            </linearGradient>
+            <filter id="cardShadow" x="-20%" y="-20%" width="150%" height="150%">
+              <feDropShadow dx="-10" dy="25" stdDeviation="30" flood-color="#000000" flood-opacity="0.6"/>
+            </filter>
+          </defs>
+          <rect width="100%" height="100%" fill="url(#storeshotBg)" />
+          <text x="110" y="290" font-family="-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif" font-size="140" font-weight="800" fill="#ffffff" letter-spacing="-4">
+            ${textSvg}
+          </text>
+          <!-- Phone Mockup Container -->
+          <g transform="translate(${width * 0.45}, ${height * 0.35}) rotate(-8)" filter="url(#cardShadow)">
+            <rect width="580" height="1180" rx="80" fill="#12111b" stroke="#2f2d3d" stroke-width="20"/>
+            <rect x="25" y="25" width="530" height="1130" rx="60" fill="#eff7fa"/>
+            <!-- Camera pill -->
+            <rect x="200" y="45" width="180" height="36" rx="18" fill="#0b0b0e"/>
+            <!-- App Screen Graphics -->
+            <text x="70" y="180" font-family="sans-serif" font-size="34" font-weight="700" fill="#18323e">myday</text>
+            <text x="70" y="270" font-family="sans-serif" font-size="52" font-weight="800" fill="#12242c">Good morning, Alex.</text>
+            <circle cx="290" cy="520" r="160" stroke="#70b7ce" stroke-width="36" fill="none"/>
+            <text x="290" y="540" font-family="sans-serif" font-size="76" font-weight="800" text-anchor="middle" fill="#18323e">${state.ringProgress}%</text>
+            <rect x="70" y="740" width="440" height="140" rx="28" fill="#ffffff" opacity="0.9"/>
+            <text x="110" y="800" font-family="sans-serif" font-size="24" font-weight="700" fill="#677b81">TODAY'S FOCUS</text>
+            <text x="110" y="845" font-family="sans-serif" font-size="36" font-weight="800" fill="#18323e">${state.taskDone ? 'Update Shipped!' : 'Ship the update'}</text>
+          </g>
+          <text x="110" y="${height - 90}" font-family="sans-serif" font-size="44" font-weight="600" fill="#ffffff" opacity="0.8">✦ StoreShot Studio</text>
+        </svg>
+      `;
+
+      const blob = new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' });
+      const url = URL.createObjectURL(blob);
+      const downloadLink = document.createElement('a');
+      downloadLink.href = url;
+      downloadLink.download = `${state.projectName.toLowerCase().replace(/\s+/g, '-')}-storeshot.svg`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+      URL.revokeObjectURL(url);
+
+      exportBtns.forEach(btn => {
+        btn.style.filter = '';
+        btn.textContent = '✓ Exported!';
+        setTimeout(() => {
+          btn.textContent = btn.id === 'btn-quick-export' ? 'Export' : 'Export screenshot';
+        }, 2000);
+      });
+      hint('Screenshot exported successfully! Check your downloads.', true);
+    }, 350);
   }
-  const footer = studio.querySelector('.canvas-footer b');
-  footer.innerHTML = "<button type='button' aria-label='Zoom out'>−</button><span>100%</span><button type='button' aria-label='Zoom in'>+</button>";
-  footer.querySelectorAll('button')[0].addEventListener('click', () => applyZoom(zoom - .1));
-  footer.querySelectorAll('button')[1].addEventListener('click', () => applyZoom(zoom + .1));
-  canvas.addEventListener('wheel', event => { if (!event.ctrlKey && !event.metaKey) return; event.preventDefault(); applyZoom(zoom + (event.deltaY < 0 ? .08 : -.08)); }, { passive: false });
 
-  let moving = false, originX = 0, originY = 0, offsetX = 0, offsetY = 0;
-  phone.addEventListener('pointerdown', event => { moving = true; originX = event.clientX; originY = event.clientY; phone.setPointerCapture(event.pointerId); hint('Drag to position the device.'); });
-  phone.addEventListener('pointermove', event => { if (!moving) return; offsetX += (event.clientX - originX) / zoom; offsetY += (event.clientY - originY) / zoom; originX = event.clientX; originY = event.clientY; phone.style.translate = offsetX + 'px ' + offsetY + 'px'; });
-  phone.addEventListener('pointerup', () => { moving = false; });
+  studio.querySelector('#btn-quick-export')?.addEventListener('click', handleExportScreenshot);
 
-  function exportShot() {
-    const title = headline.innerText.replace(/[<>&]/g, '').split('\n');
-    const text = title.map((line, index) => "<tspan x='110' dy='" + (index ? 165 : 0) + "'>" + line + "</tspan>").join('');
-    const color = inspector.querySelector('#background-color').value;
-    const svg = "<svg xmlns='http://www.w3.org/2000/svg' width='1290' height='2796'><defs><linearGradient id='g' x2='1' y2='1'><stop stop-color='#4029ba'/><stop offset='.55' stop-color='" + color + "'/><stop offset='1' stop-color='#e17ba8'/></linearGradient></defs><rect width='100%' height='100%' fill='url(#g)'/><text x='110' y='270' font-family='Arial, sans-serif' font-size='145' font-weight='700' fill='white'>" + text + "</text><rect x='520' y='900' width='480' height='1120' rx='75' fill='#15151e' stroke='#403d4a' stroke-width='18' transform='rotate(-8 760 1460)'/><rect x='550' y='930' width='420' height='1060' rx='52' fill='#cbe8ef' transform='rotate(-8 760 1460)'/><text x='100' y='2660' font-family='Arial' font-size='44' fill='white'>StoreShot Studio</text></svg>";
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(new Blob([svg], { type: 'image/svg+xml' }));
-    link.download = 'storeshot-screenshot.svg';
-    link.click();
-    URL.revokeObjectURL(link.href);
-    hint('Your screenshot has been exported.');
-  }
-  inspector.querySelector('#export-shot').addEventListener('click', exportShot);
-  topButtons[2].addEventListener('click', exportShot);
-  topButtons[0].addEventListener('click', () => hint('Undo is available in the full editor.'));
-  topButtons[1].addEventListener('click', () => hint('Redo is available in the full editor.'));
+  // Initialize
+  pushState();
+  renderAll();
 }
 const featureCards = Array.from(document.querySelectorAll('.feature-card'));
 if (featureCards.length) {
