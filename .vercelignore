@@ -1,0 +1,7 @@
+# App Store submission master — 1.2 MB, not referenced by the site.
+# Keep it in the repo, keep it out of the deploy.
+Resources/app-icon-1024.png
+
+# Local tooling / notes
+*.py
+.DS_Store

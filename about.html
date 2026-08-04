@@ -3,29 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Learn about StoreShot Studio — the focused creative studio for designing stunning App Store and Google Play screenshots." />
+    <meta name="description" content="StoreShot Studio is a focused creative workspace that turns real product screens into polished App Store visuals — local-first and privacy conscious." />
     <title>About StoreShot Studio</title>
+
+    <link rel="canonical" href="https://store-shot-studio.vercel.app/about" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="StoreShot Studio" />
+    <meta property="og:url" content="https://store-shot-studio.vercel.app/about" />
+    <meta property="og:title" content="About StoreShot Studio" />
+    <meta property="og:description" content="StoreShot Studio is a focused creative workspace that turns real product screens into polished App Store visuals — local-first and privacy conscious." />
+    <meta property="og:image" content="https://store-shot-studio.vercel.app/Resources/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="StoreShot Studio — App Store screenshots, made to stand out" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="About StoreShot Studio" />
+    <meta name="twitter:description" content="StoreShot Studio is a focused creative workspace that turns real product screens into polished App Store visuals — local-first and privacy conscious." />
+    <meta name="twitter:image" content="https://store-shot-studio.vercel.app/Resources/og-image.png" />
+    <meta name="twitter:image:alt" content="StoreShot Studio — App Store screenshots, made to stand out" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=3" />
     <link rel="icon" type="image/png" sizes="32x32" href="Resources/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="Resources/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="Resources/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="Resources/app-icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="Resources/app-icon-512.png" />
+    <link rel="manifest" href="site.webmanifest" />
     <meta name="theme-color" content="#08070d" />
   </head>
   <body>
+    <a class="skip-link" href="#top">Skip to content</a>
     <div class="aurora aurora-one"></div><div class="aurora aurora-two"></div><div class="grain"></div>
     <header class="site-header">
       <nav class="nav wrap" aria-label="Main navigation">
-        <a class="brand" href="index.html#top"><span class="brand-mark"><img src="Resources/brand-logo.png" alt="StoreShot Studio" width="28" height="28" /></span>StoreShot <em>Studio</em></a>
+        <a class="brand" href="index.html#top"><span class="brand-mark"><picture><source srcset="Resources/brand-logo.webp" type="image/webp" /><img src="Resources/brand-logo.png" alt="" width="28" height="28" decoding="async" /></picture></span>StoreShot <em>Studio</em></a>
         <button class="menu-button" aria-expanded="false" aria-controls="nav-links">Menu</button>
         <div class="nav-links" id="nav-links">
           <a href="index.html#features">Features</a><a href="index.html#workflow">How it works</a><a href="index.html#showcase">Showcase</a>
         </div>
-        <a class="nav-download" href="index.html#download"><span>Download app</span><span class="nav-download-arrow" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="nav-download" href="index.html#waitlist"><span>Join waitlist</span><span class="nav-download-arrow" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </nav>
     </header>
 
@@ -43,7 +66,7 @@
       <article class="doc-card">
         <p class="doc-lead">Beautiful apps deserve beautiful screenshots.</p>
 
-        <p>StoreShot Studio is a focused creative workspace that helps developers and designers turn real product screens into polished App Store and Google Play visuals.</p>
+        <p>StoreShot Studio is a focused creative workspace that helps developers and designers turn real product screens into polished App Store visuals.</p>
 
         <h3>Fluid & Focused Workflow</h3>
         <p>Import your screenshots, choose a device, add typography and backgrounds, organize multiple pages, and export store-ready images—all in one simple workflow.</p>
@@ -62,7 +85,7 @@
 
     <footer>
       <div class="footer-inner wrap">
-        <a class="brand" href="index.html#top"><span class="brand-mark"><img src="Resources/brand-logo.png" alt="StoreShot Studio" width="28" height="28" /></span>StoreShot <em>Studio</em></a>
+        <a class="brand" href="index.html#top"><span class="brand-mark"><picture><source srcset="Resources/brand-logo.webp" type="image/webp" /><img src="Resources/brand-logo.png" alt="" width="28" height="28" decoding="async" /></picture></span>StoreShot <em>Studio</em></a>
         <p>Designed for the people who build the apps we love.</p>
         <div class="footer-links">
           <a href="privacy.html">Privacy</a>
@@ -74,6 +97,6 @@
         <small>© <span id="year"></span> StoreShot Studio. All rights reserved.</small>
       </div>
     </footer>
-    <script src="script.js"></script>
+    <script src="script.js" defer></script>
   </body>
 </html>

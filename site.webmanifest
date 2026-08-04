@@ -1,0 +1,30 @@
+{
+  "name": "StoreShot Studio",
+  "short_name": "StoreShot",
+  "description": "Design App Store screenshots that convert. Studio-grade device framing, one-click templates, and every App Store display size — built for iPhone and iPad.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#08070d",
+  "theme_color": "#08070d",
+  "icons": [
+    {
+      "src": "/Resources/app-icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/Resources/app-icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/Resources/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ]
+}

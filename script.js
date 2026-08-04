@@ -21,7 +21,7 @@ if (studio) {
     activeTool: 'design',
     selectedLayer: 'preview',
     hiddenLayers: new Set(),
-    platform: 'iphone', // 'iphone' | 'android'
+    platform: 'iphone', // 'iphone' | 'ipad'
     frame: 'modern', // 'modern' | 'classic' | 'titanium'
     tilt: 'left', // 'dynamic' | 'left' | 'straight' | 'right' | 'perspective'
     shadow: 'soft', // 'soft' | 'dramatic' | 'glow' | 'none'
@@ -163,13 +163,13 @@ if (studio) {
       name: 'Cyber Mint',
       bg: '#20A780',
       bgName: 'Cyber mint',
-      platform: 'android',
+      platform: 'ipad',
       frame: 'modern',
       tilt: 'left',
       shadow: 'glow',
       screen: 'fitness',
       headline: 'Push limits.<br /><strong>Every day.</strong>',
-      tagline: '🔥 Google Play Top'
+      tagline: '🔥 App Store Top'
     }
   };
 
@@ -219,8 +219,8 @@ if (studio) {
     // Frame styling
     phone.classList.toggle('classic-frame', state.frame === 'classic');
     phone.classList.toggle('titanium-frame', state.frame === 'titanium');
-    phone.classList.toggle('android-phone', state.platform === 'android');
-    artboard.classList.toggle('android-canvas', state.platform === 'android');
+    phone.classList.toggle('ipad-frame', state.platform === 'ipad');
+    artboard.classList.toggle('ipad-canvas', state.platform === 'ipad');
 
     // Tilt angle
     phone.classList.remove('tilt-dynamic', 'tilt-left', 'tilt-straight', 'tilt-right', 'tilt-perspective');
@@ -249,16 +249,16 @@ if (studio) {
 
     // Platform badges
     if (dimBadge) {
-      dimBadge.textContent = state.platform === 'android' ? '1080 × 1920' : '1290 × 2796';
+      dimBadge.textContent = state.platform === 'ipad' ? '2048 × 2732' : '1290 × 2796';
     }
     if (deviceBadge) {
-      deviceBadge.textContent = state.platform === 'android' ? 'Pixel 9 Pro' : (state.frame === 'titanium' ? 'iPhone Titanium' : (state.frame === 'classic' ? 'iPhone Classic' : 'iPhone 16 Pro'));
+      deviceBadge.textContent = state.platform === 'ipad' ? 'iPad Pro 12.9″' : (state.frame === 'titanium' ? 'iPhone Titanium' : (state.frame === 'classic' ? 'iPhone Classic' : 'iPhone 16 Pro'));
     }
 
     // Layers panel updates
     const deviceName = studio.querySelector('#layer-device-name');
     if (deviceName) {
-      deviceName.textContent = state.platform === 'android' ? 'Pixel 9 Pro' : 'iPhone 16 Pro';
+      deviceName.textContent = state.platform === 'ipad' ? 'iPad Pro 12.9″' : 'iPhone 16 Pro';
     }
     const bgNameEl = studio.querySelector('#layer-bg-name');
     if (bgNameEl) {
@@ -294,8 +294,8 @@ if (studio) {
       <div class="insp-group">
         <span class="field-label">DEVICE & STORE</span>
         <div class="segmented" role="group">
-          <button class="insp-btn-platform ${state.platform === 'iphone' ? 'chosen' : ''}" data-platform="iphone">iPhone (6.7")</button>
-          <button class="insp-btn-platform ${state.platform === 'android' ? 'chosen' : ''}" data-platform="android">Android (Play)</button>
+          <button class="insp-btn-platform ${state.platform === 'iphone' ? 'chosen' : ''}" data-platform="iphone">iPhone 6.7&quot;</button>
+          <button class="insp-btn-platform ${state.platform === 'ipad' ? 'chosen' : ''}" data-platform="ipad">iPad 12.9&quot;</button>
         </div>
       </div>
     `;
@@ -375,7 +375,7 @@ if (studio) {
         <span class="field-label">EXPORT SETTINGS</span>
         <div class="export-row">
           <span>Target</span>
-          <b>${state.platform === 'android' ? 'Google Play (PNG)' : 'App Store (6.7″)'}</b>
+          <b>${state.platform === 'ipad' ? 'App Store (12.9″)' : 'App Store (6.7″)'}</b>
         </div>
         <button class="export-button" id="insp-btn-export">
           <span>Export screenshot</span>
@@ -402,7 +402,7 @@ if (studio) {
         state.platform = btn.dataset.platform;
         pushState();
         renderAll();
-        hint(state.platform === 'android' ? 'Switched to Android Google Play canvas' : 'Switched to Apple App Store 6.7″ canvas');
+        hint(state.platform === 'ipad' ? 'Switched to App Store iPad 12.9″ canvas' : 'Switched to App Store iPhone 6.7″ canvas');
         triggerSaveStatus();
       });
     });
@@ -836,8 +836,8 @@ if (studio) {
       const textSvg = title.map((line, idx) => `<tspan x="110" dy="${idx ? 165 : 0}">${line}</tspan>`).join('');
       const color = state.bgColor;
       
-      const width = state.platform === 'android' ? 1080 : 1290;
-      const height = state.platform === 'android' ? 1920 : 2796;
+      const width = state.platform === 'ipad' ? 2048 : 1290;
+      const height = state.platform === 'ipad' ? 2732 : 2796;
 
       const svgData = `
         <svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
@@ -1038,3 +1038,261 @@ if (designFeatureCard) {
     });
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Waitlist signup
+   ---------------------------------------------------------------------------
+   CONFIGURE ME: paste your form endpoint below to collect addresses properly.
+   Works as-is with any service that accepts a POST (Formspree, Buttondown,
+   ConvertKit, a Vercel serverless function, etc.).
+
+     const WAITLIST_ENDPOINT = 'https://formspree.io/f/xxxxxxxx';
+
+   While it is left empty the form still confirms to the visitor and parks the
+   address in localStorage under 'storeshot:waitlist', so no signup is lost
+   before a real endpoint is connected. Recover them from the browser console:
+
+     JSON.parse(localStorage.getItem('storeshot:waitlist'))
+
+   WAITLIST_FALLBACK_EMAIL is only surfaced if a configured endpoint errors.
+--------------------------------------------------------------------------- */
+{
+  const WAITLIST_ENDPOINT = '';
+  const WAITLIST_FALLBACK_EMAIL = 'support@storeshotstudio.app';
+
+  const form = document.getElementById('waitlist-form');
+  if (form) {
+    const input = document.getElementById('waitlist-email');
+    const status = document.getElementById('waitlist-status');
+    const submit = form.querySelector('.waitlist-submit');
+    const isValid = value => /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(value.trim());
+
+    const setStatus = (message, kind) => {
+      status.textContent = message;
+      status.className = 'waitlist-status' + (kind ? ' is-' + kind : '');
+    };
+
+    // Toasts carry the feedback, but if that module ever fails to load we still
+    // owe the visitor an answer — fall back to the inline status line.
+    const notify = ({ variant, title, message, duration, fallback }) => {
+      if (typeof window.showToast === 'function') {
+        window.showToast({ variant, title, message, duration });
+      } else {
+        setStatus(fallback || title + ' — ' + message, variant === 'error' ? 'error' : 'ok');
+      }
+    };
+
+    // Until WAITLIST_ENDPOINT is set there is no server to receive the address,
+    // so park it in localStorage. Nothing is transmitted; it simply means the
+    // early signups aren't lost and can be exported once a backend exists.
+    const QUEUE_KEY = 'storeshot:waitlist';
+    const queueLocally = email => {
+      try {
+        const queued = JSON.parse(localStorage.getItem(QUEUE_KEY) || '[]');
+        if (!queued.some(entry => entry.email === email)) {
+          queued.push({ email, at: new Date().toISOString() });
+          localStorage.setItem(QUEUE_KEY, JSON.stringify(queued));
+        }
+      } catch (error) {
+        /* private browsing or a full quota — the confirmation still stands */
+      }
+    };
+
+    // One shared confirmation so every success path looks and reads the same.
+    const confirmSignup = email => {
+      const row = form.querySelector('.waitlist-row');
+      if (row) row.hidden = true;
+      setStatus('Saved ' + email + '. We\u2019ll be in touch the day we launch.', 'ok');
+      notify({
+        variant: 'success',
+        title: 'You\u2019re on the list',
+        message: 'Your email\u2019s locked in. We\u2019ll send one note the day StoreShot Studio hits the App Store — nothing before it.',
+        duration: 6500,
+        fallback: 'You\u2019re on the list. We\u2019ll email you the day StoreShot Studio launches.'
+      });
+    };
+
+    form.addEventListener('submit', async event => {
+      event.preventDefault();
+      const email = input.value.trim();
+
+      if (!isValid(email)) {
+        setStatus('', '');
+        input.setAttribute('aria-invalid', 'true');
+        input.focus();
+        notify({
+          variant: 'error',
+          title: 'That email looks off',
+          message: 'Check the address and try again — we only need a valid inbox.',
+          fallback: 'Please enter a valid email address.'
+        });
+        return;
+      }
+      input.removeAttribute('aria-invalid');
+
+      // No endpoint configured yet — confirm to the visitor and hold the address
+      // locally so it can be recovered once a real endpoint is wired up.
+      if (!WAITLIST_ENDPOINT) {
+        queueLocally(email);
+        confirmSignup(email);
+        return;
+      }
+
+      submit.disabled = true;
+      setStatus('Adding you to the list…', '');
+
+      try {
+        const response = await fetch(WAITLIST_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        if (!response.ok) throw new Error('Request failed: ' + response.status);
+        confirmSignup(email);
+      } catch (error) {
+        setStatus('', '');
+        submit.disabled = false;
+        notify({
+          variant: 'error',
+          title: 'That didn\u2019t go through',
+          message: 'Something went wrong on our end. Email ' + WAITLIST_FALLBACK_EMAIL + ' and we\u2019ll add you manually.',
+          duration: 8000,
+          fallback: 'Something went wrong. Please email ' + WAITLIST_FALLBACK_EMAIL + ' instead.'
+        });
+      }
+    });
+
+    input.addEventListener('input', () => {
+      if (status.textContent) setStatus('', '');
+      input.removeAttribute('aria-invalid');
+    });
+  }
+}
+
+/* ---------------------------------------------------------------------------
+   Toast notifications
+   ---------------------------------------------------------------------------
+   Injects its own viewport, so every page gets toasts without markup changes.
+
+     showToast({ title, message, variant, duration })
+
+   variant: 'success' | 'error' | 'info'   (default 'info')
+   duration: ms before auto-dismiss, or 0 to keep it until dismissed.
+
+   The viewport is a persistent aria-live region — the most reliable way to get
+   dynamically injected messages announced — so individual toasts intentionally
+   carry no role of their own, which would double-announce.
+--------------------------------------------------------------------------- */
+(function () {
+  const DEFAULT_DURATION = 5200;
+  const MAX_VISIBLE = 3;
+
+  const ICONS = {
+    success: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M3.5 8.5L6.5 11.5L12.5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    error: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 4.5V9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="11.75" r="1" fill="currentColor"/></svg>',
+    info: '<svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true"><path d="M8 11.5V7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><circle cx="8" cy="4.5" r="1" fill="currentColor"/></svg>'
+  };
+
+  const reduceMotion = () =>
+    window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  let viewport = null;
+  function getViewport() {
+    if (viewport && document.body.contains(viewport)) return viewport;
+    viewport = document.createElement('div');
+    viewport.className = 'toast-viewport';
+    viewport.setAttribute('aria-live', 'polite');
+    viewport.setAttribute('aria-atomic', 'false');
+    document.body.appendChild(viewport);
+    return viewport;
+  }
+
+  function dismiss(toast) {
+    if (!toast || toast.dataset.leaving === 'true') return;
+    toast.dataset.leaving = 'true';
+    clearTimeout(toast._timer);
+    toast.classList.remove('is-visible');
+    toast.classList.add('is-leaving');
+    const remove = () => toast.remove();
+    if (reduceMotion()) return remove();
+    toast.addEventListener('transitionend', remove, { once: true });
+    setTimeout(remove, 600); // belt-and-braces if transitionend never fires
+  }
+
+  function showToast(options) {
+    const opts = typeof options === 'string' ? { message: options } : options || {};
+    const variant = ICONS[opts.variant] ? opts.variant : 'info';
+    const duration = opts.duration === 0 ? 0 : Number(opts.duration) || DEFAULT_DURATION;
+    const host = getViewport();
+
+    while (host.children.length >= MAX_VISIBLE) dismiss(host.firstElementChild);
+
+    const toast = document.createElement('div');
+    toast.className = 'toast toast-' + variant;
+    toast.style.setProperty('--toast-duration', duration + 'ms');
+
+    const icon = document.createElement('span');
+    icon.className = 'toast-icon';
+    icon.innerHTML = ICONS[variant];
+
+    const body = document.createElement('div');
+    body.className = 'toast-body';
+    if (opts.title) {
+      const title = document.createElement('strong');
+      title.className = 'toast-title';
+      title.textContent = opts.title;
+      body.appendChild(title);
+    }
+    if (opts.message) {
+      const message = document.createElement('p');
+      message.className = 'toast-message';
+      message.textContent = opts.message;
+      body.appendChild(message);
+    }
+
+    const close = document.createElement('button');
+    close.type = 'button';
+    close.className = 'toast-close';
+    close.setAttribute('aria-label', 'Dismiss notification');
+    close.innerHTML = '<svg width="11" height="11" viewBox="0 0 12 12" fill="none" aria-hidden="true"><path d="M3 3L9 9M9 3L3 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round"/></svg>';
+    close.addEventListener('click', () => dismiss(toast));
+
+    toast.append(icon, body, close);
+
+    if (duration > 0) {
+      const bar = document.createElement('span');
+      bar.className = 'toast-progress';
+      bar.appendChild(document.createElement('i'));
+      toast.appendChild(bar);
+    }
+
+    host.appendChild(toast);
+    requestAnimationFrame(() => requestAnimationFrame(() => toast.classList.add('is-visible')));
+
+    if (duration > 0) {
+      let remaining = duration;
+      let startedAt = Date.now();
+      const start = () => { startedAt = Date.now(); toast._timer = setTimeout(() => dismiss(toast), remaining); };
+      const pause = () => { clearTimeout(toast._timer); remaining -= Date.now() - startedAt; };
+      toast.addEventListener('mouseenter', pause);
+      toast.addEventListener('mouseleave', start);
+      toast.addEventListener('focusin', pause);
+      toast.addEventListener('focusout', start);
+      start();
+    }
+
+    return toast;
+  }
+
+  window.showToast = showToast;
+  window.dismissToasts = () => {
+    if (viewport) Array.from(viewport.children).forEach(dismiss);
+  };
+
+  // Escape dismisses the most recent toast.
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && viewport && viewport.lastElementChild) {
+      dismiss(viewport.lastElementChild);
+    }
+  });
+})();

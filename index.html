@@ -3,29 +3,52 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="StoreShot Studio makes polished App Store and Google Play screenshots in minutes." />
-    <title>StoreShot Studio — Screenshot design, beautifully simple</title>
+    <meta name="description" content="Design polished, store-ready App Store screenshots on iPhone and iPad. Import your screens, style your story, and export every required size in minutes." />
+    <title>StoreShot Studio — App Store screenshots, made to stand out</title>
+
+    <link rel="canonical" href="https://store-shot-studio.vercel.app/" />
+    <meta name="robots" content="index, follow" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="StoreShot Studio" />
+    <meta property="og:url" content="https://store-shot-studio.vercel.app/" />
+    <meta property="og:title" content="StoreShot Studio — App Store screenshots, made to stand out" />
+    <meta property="og:description" content="Design polished, store-ready App Store screenshots on iPhone and iPad. Import your screens, style your story, and export every required size in minutes." />
+    <meta property="og:image" content="https://store-shot-studio.vercel.app/Resources/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="StoreShot Studio — App Store screenshots, made to stand out" />
+    <meta property="og:locale" content="en_US" />
+
+    <!-- Twitter / X -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="StoreShot Studio — App Store screenshots, made to stand out" />
+    <meta name="twitter:description" content="Design polished, store-ready App Store screenshots on iPhone and iPad. Import your screens, style your story, and export every required size in minutes." />
+    <meta name="twitter:image" content="https://store-shot-studio.vercel.app/Resources/og-image.png" />
+    <meta name="twitter:image:alt" content="StoreShot Studio — App Store screenshots, made to stand out" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@600;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="styles.css?v=2" />
+    <link rel="stylesheet" href="styles.css?v=3" />
     <link rel="icon" type="image/png" sizes="32x32" href="Resources/favicon-32.png" />
     <link rel="icon" type="image/png" sizes="16x16" href="Resources/favicon-16.png" />
     <link rel="apple-touch-icon" sizes="180x180" href="Resources/apple-touch-icon.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="Resources/app-icon-192.png" />
-    <link rel="icon" type="image/png" sizes="512x512" href="Resources/app-icon-512.png" />
+    <link rel="manifest" href="site.webmanifest" />
     <meta name="theme-color" content="#08070d" />
   </head>
   <body>
+    <a class="skip-link" href="#top">Skip to content</a>
     <div class="aurora aurora-one"></div><div class="aurora aurora-two"></div><div class="grain"></div>
     <header class="site-header">
       <nav class="nav wrap" aria-label="Main navigation">
-        <a class="brand" href="#top"><span class="brand-mark"><img src="Resources/brand-logo.png" alt="StoreShot Studio" width="28" height="28" /></span>StoreShot <em>Studio</em></a>
+        <a class="brand" href="#top"><span class="brand-mark"><picture><source srcset="Resources/brand-logo.webp" type="image/webp" /><img src="Resources/brand-logo.png" alt="" width="28" height="28" decoding="async" /></picture></span>StoreShot <em>Studio</em></a>
         <button class="menu-button" aria-expanded="false" aria-controls="nav-links">Menu</button>
         <div class="nav-links" id="nav-links">
           <a href="#features">Features</a><a href="#workflow">How it works</a><a href="#showcase">Showcase</a>
         </div>
-        <a class="nav-download" href="#download"><span>Download app</span><span class="nav-download-arrow" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <a class="nav-download" href="#waitlist"><span>Join waitlist</span><span class="nav-download-arrow" aria-hidden="true"><svg width="11" height="11" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 9.5L9.5 2.5M9.5 2.5H4M9.5 2.5V8" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
       </nav>
     </header>
 
@@ -33,12 +56,12 @@
       <section class="hero wrap">
         <div class="eyebrow"><i></i> Made for app makers</div>
         <h1>App Store screenshots,<br /><span>made to stand out.</span></h1>
-        <p class="hero-copy">Design polished screenshots for the App Store and Google Play with a studio built for the way you ship. No complicated desktop tools. No pixel-pushing panic.</p>
-        <div class="hero-actions" id="download">
-          <a class="button button-primary" href="#features"><span>Explore StoreShot</span><span class="btn-arrow" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
+        <p class="hero-copy">Design polished screenshots for the App Store with a studio built for the way you ship. No complicated desktop tools. No pixel-pushing panic.</p>
+        <div class="hero-actions">
+          <a class="button button-primary" href="#waitlist"><span>Join the waitlist</span><span class="btn-arrow" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a>
           <a class="button button-glass" href="#workflow"><span class="btn-icon-play" aria-hidden="true"><svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M3.2 2.2a.4.4 0 0 1 .61-.34l4.6 2.8a.4.4 0 0 1 0 .68l-4.6 2.8a.4.4 0 0 1-.61-.34V2.2z"/></svg></span><span>See how it works</span></a>
         </div>
-        <div class="hero-note"><span class="check">✓</span> Built for iPhone · Export-ready in seconds</div>
+        <div class="hero-note"><span class="check">✓</span> Built for iPhone and iPad · Coming soon to the App Store</div>
 
         <div class="studio-window" id="studio-window" aria-label="StoreShot Studio editor preview">
           <div class="window-bar">
@@ -48,7 +71,7 @@
               <button class="traffic-btn traffic-green" id="traffic-expand" title="Toggle Studio Focus Mode" aria-label="Expand Studio"></button>
             </div>
             <div class="window-title">
-              <span class="app-icon-mini"><img src="Resources/app-icon-mini.png" alt="StoreShot" width="18" height="18" /></span>
+              <span class="app-icon-mini"><picture><source srcset="Resources/app-icon-mini.webp" type="image/webp" /><img src="Resources/app-icon-mini.png" alt="StoreShot" width="18" height="18" decoding="async" /></picture></span>
               <span class="project-name-edit" id="project-name-edit" contenteditable="true" spellcheck="false" title="Click to rename project">Untitled project</span>
               <small class="save-status" id="save-status">● Saved</small>
             </div>
@@ -58,13 +81,13 @@
           </div>
           <div class="editor">
             <aside class="editor-sidebar" aria-label="Studio Tools">
-              <div class="sidebar-logo" title="StoreShot Studio"><img src="Resources/brand-logo.png" alt="StoreShot Studio" width="28" height="28" /></div>
-              <button class="tool active" data-tool="design" title="Design & Layers (L)">▣</button>
-              <button class="tool" data-tool="templates" title="One-Click Templates (T)">▧</button>
-              <button class="tool" data-tool="typography" title="Typography & Copy (A)">T</button>
-              <button class="tool" data-tool="mockups" title="App UI Mockup Screen (M)">✦</button>
-              <button class="tool" data-tool="device" title="3D Device & Framing (D)">◈</button>
-              <button class="sidebar-bottom" id="btn-studio-info" title="Studio Shortcuts & Tips">?</button>
+              <div class="sidebar-logo" title="StoreShot Studio"><picture><source srcset="Resources/brand-logo.webp" type="image/webp" /><img src="Resources/brand-logo.png" alt="" width="28" height="28" decoding="async" /></picture></div>
+              <button class="tool active" data-tool="design" title="Design & Layers (L)" aria-label="Design and layers"><span aria-hidden="true">▣</span></button>
+              <button class="tool" data-tool="templates" title="One-Click Templates (T)" aria-label="Templates"><span aria-hidden="true">▧</span></button>
+              <button class="tool" data-tool="typography" title="Typography & Copy (A)" aria-label="Typography and copy"><span aria-hidden="true">T</span></button>
+              <button class="tool" data-tool="mockups" title="App UI Mockup Screen (M)" aria-label="App mockup screen"><span aria-hidden="true">✦</span></button>
+              <button class="tool" data-tool="device" title="3D Device & Framing (D)" aria-label="Device and framing"><span aria-hidden="true">◈</span></button>
+              <button class="sidebar-bottom" id="btn-studio-info" title="Studio Shortcuts & Tips" aria-label="Studio shortcuts and tips"><span aria-hidden="true">?</span></button>
             </aside>
             <section class="layers" id="layers-panel">
               <div class="panel-heading">
@@ -238,20 +261,66 @@
         </div>
       </section>
 
-      <section class="logo-strip wrap"><p>Built for independent makers, designers, and ambitious app teams.</p><div><span>● App Store</span><span>◌ Product Hunt</span><span>▲ Indie Hackers</span><span>✦ Apple Design</span></div></section>
-
       <section class="feature-section wrap" id="features"><div class="section-intro"><div><div class="eyebrow"><i></i> Your screenshot studio</div><h2>Everything you need to<br />tell your app’s story.</h2></div><p>StoreShot turns the tedious parts of screenshot creation into a fluid, focused design workflow—so you can spend more time on your product.</p></div>
-        <div class="feature-grid"><article class="feature-card tall"><div class="feature-icon purple">◇</div><h3>Made for your app</h3><p>Drop in your screenshots, choose a device, and turn raw UI into a store-ready story.</p><div class="device-stack"><div class="mini-device back"><span></span></div><div class="mini-device front"><span></span></div></div></article><article class="feature-card wide"><div class="feature-icon blue">✦</div><h3>Design without limits</h3><p>Work with real layers, typography, gradients, shadows, and precise alignment controls—without leaving the flow.</p><div class="swatch-row"><span></span><span></span><span></span><span></span><span></span><b>+</b></div></article><article class="feature-card"><div class="feature-icon pink">↗</div><h3>Export with confidence</h3><p>Get crisp, correctly sized assets for every App Store and Google Play placement.</p><div class="export-sizes"><span>6.7″</span><span>6.5″</span><span>5.5″</span></div></article></div>
+        <div class="feature-grid"><article class="feature-card tall"><div class="feature-icon purple">◇</div><h3>Made for your app</h3><p>Drop in your screenshots, choose a device, and turn raw UI into a store-ready story.</p><div class="device-stack"><div class="mini-device back"><span></span></div><div class="mini-device front"><span></span></div></div></article><article class="feature-card wide"><div class="feature-icon blue">✦</div><h3>Design without limits</h3><p>Work with real layers, typography, gradients, shadows, and precise alignment controls—without leaving the flow.</p><div class="swatch-row"><span></span><span></span><span></span><span></span><span></span><b>+</b></div></article><article class="feature-card"><div class="feature-icon pink">↗</div><h3>Export with confidence</h3><p>Get crisp, correctly sized assets for every App Store display size.</p><div class="export-sizes"><span>6.7″</span><span>6.5″</span><span>5.5″</span></div></article></div>
       </section>
 
       <section class="workflow wrap" id="workflow"><div class="workflow-art"><div class="steps-orb"></div><div class="steps-orb-inner"></div><div class="workflow-card one"><b>1</b><span>Import screenshots</span></div><div class="workflow-card two"><b>2</b><span>Style your story</span></div><div class="workflow-card three"><b>3</b><span>Export and ship</span></div><div class="workflow-phone"><div class="phone-screen small-screen"><b>StoreShot</b><div>Beautiful apps<br />deserve beautiful<br /><strong>screenshots.</strong></div></div></div></div><div class="workflow-copy"><div class="eyebrow"><i></i> A faster way to launch</div><h2>From first screenshot<br />to store-ready.</h2><p>Whether you are releasing your first app or refining your next major update, StoreShot keeps every screenshot on-brand and ready to publish.</p><ul><li><span>01</span> Start with your screenshots</li><li><span>02</span> Apply a template or make it yours</li><li><span>03</span> Export every required size at once</li></ul></div></section>
 
       <section class="showcase wrap" id="showcase"><div class="showcase-head"><div><div class="eyebrow"><i></i> Designed to be noticed</div><h2>Your product,<br />in its best light.</h2></div><p>Give every frame the attention your product deserves.</p></div><div class="shot-gallery"><div class="shot shot-one"><small>Better habits,<br /><b>one day at a time.</b></small><div class="gallery-phone light"><div>daylight</div><b>Monday<br />morning</b><span>8:24</span></div></div><div class="shot shot-two"><small>Money, <b>made clear.</b></small><div class="gallery-phone dark"><div>vault.</div><b>$24,580<span>.50</span></b><i>+ 14.8%</i></div></div><div class="shot shot-three"><small>Your next<br /><b>great escape.</b></small><div class="gallery-phone coral"><div>✦</div><b>Find your<br />way out.</b></div></div></div></section>
 
-      <section class="closing wrap"><div class="closing-card"><div class="closing-glow"></div><div class="eyebrow"><i></i> Ready when you are</div><h2>Make your app<br /><span>impossible to ignore.</span></h2><p>Turn your best work into your best first impression.</p><a class="button button-primary" href="#top"><span>Start creating for free</span><span class="btn-arrow" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></a></div></section>
+      <section class="closing wrap" id="waitlist"><div class="closing-card"><div class="closing-glow"></div><div class="eyebrow"><i></i> Coming soon to the App Store</div><h2>Make your app<br /><span>impossible to ignore.</span></h2><p>StoreShot Studio is in active development. Join the waitlist and we’ll email you once — the day it lands on the App Store.</p>
+        <form class="waitlist-form" id="waitlist-form" novalidate>
+          <div class="waitlist-row">
+            <label class="visually-hidden" for="waitlist-email">Email address</label>
+            <input class="waitlist-input" id="waitlist-email" name="email" type="email" inputmode="email" autocomplete="email" required placeholder="you@example.com" aria-describedby="waitlist-status" />
+            <button class="button button-primary waitlist-submit" type="submit"><span>Notify me</span><span class="btn-arrow" aria-hidden="true"><svg width="12" height="12" viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M2.5 6H9.5M6.5 3L9.5 6L6.5 9" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"/></svg></span></button>
+          </div>
+          <p class="waitlist-status" id="waitlist-status"></p>
+          <p class="waitlist-fineprint">No spam, no sharing your address. One launch email, then you can unsubscribe with a click.</p>
+        </form>
+      </div></section>
     </main>
-    <footer><div class="footer-inner wrap"><a class="brand" href="#top"><span class="brand-mark"><img src="Resources/brand-logo.png" alt="StoreShot Studio" width="28" height="28" /></span>StoreShot <em>Studio</em></a><p>Designed for the people who build the apps we love.</p><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="about.html">About</a><a href="contact.html">Contact</a></div><small>© <span id="year"></span> StoreShot Studio. All rights reserved.</small></div></footer>
-    <script src="script.js"></script>
+    <footer><div class="footer-inner wrap"><a class="brand" href="#top"><span class="brand-mark"><picture><source srcset="Resources/brand-logo.webp" type="image/webp" /><img src="Resources/brand-logo.png" alt="" width="28" height="28" decoding="async" /></picture></span>StoreShot <em>Studio</em></a><p>Designed for the people who build the apps we love.</p><div class="footer-links"><a href="privacy.html">Privacy</a><a href="terms.html">Terms</a><a href="disclaimer.html">Disclaimer</a><a href="about.html">About</a><a href="contact.html">Contact</a></div><small>© <span id="year"></span> StoreShot Studio. All rights reserved.</small></div></footer>
+    <script src="script.js" defer></script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "StoreShot Studio",
+      "description": "Design polished, store-ready App Store screenshots on iPhone and iPad. Import your screens, style your story, and export every required size in minutes.",
+      "url": "https://store-shot-studio.vercel.app/",
+      "image": "https://store-shot-studio.vercel.app/Resources/og-image.png",
+      "applicationCategory": "DesignApplication",
+      "applicationSubCategory": "Screenshot Design",
+      "operatingSystem": "iOS 17.0 or later",
+      "softwareVersion": "1.0",
+      "inLanguage": "en",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "USD",
+        "availability": "https://schema.org/PreOrder"
+      },
+      "author": {
+        "@type": "Organization",
+        "name": "StoreShot Studio",
+        "url": "https://store-shot-studio.vercel.app/",
+        "email": "support@storeshotstudio.app"
+      },
+      "publisher": {
+        "@type": "Organization",
+        "name": "StoreShot Studio",
+        "url": "https://store-shot-studio.vercel.app/",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://store-shot-studio.vercel.app/Resources/app-icon-512.png",
+          "width": 512,
+          "height": 512
+        }
+      }
+    }
+    </script>
   </body>
 </html>
 
