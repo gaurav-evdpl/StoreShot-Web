@@ -433,7 +433,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 .waitlist-input:hover{border-color:rgba(255,255,255,.26)}
 .waitlist-input:focus{outline:none;border-color:#8f7cfc;background:rgba(8,7,13,.78);box-shadow:0 0 0 3px rgba(143,124,252,.28)}
 .waitlist-input[aria-invalid="true"]{border-color:#ff8a8a;box-shadow:0 0 0 3px rgba(255,138,138,.22)}
-.waitlist-submit{flex:0 0 auto;gap:10px;border:0;padding:14px 24px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.waitlist-submit{flex:0 0 auto;gap:8px;border:0;padding:0 8px 0 18px;height:46px;font:inherit;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap}
+.waitlist-submit .btn-arrow{width:26px;height:26px}
 .waitlist-submit:hover{transform:translateY(-1px);filter:brightness(1.05)}
 .waitlist-submit[disabled]{opacity:.6;cursor:progress;transform:none;filter:none}
 .waitlist-status{min-height:19px;margin:14px 0 0;font-size:12.5px;font-weight:600;line-height:1.5}
@@ -489,4 +490,34 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
   .toast{transition:opacity .01ms linear;transform:none}
   .toast.is-visible,.toast.is-leaving{transform:none}
   .toast-progress i{animation:none;transform:scaleX(1)}
+}
+
+/* ============================================================================
+   Mobile refinements (appended last so these win on equal specificity)
+   ========================================================================== */
+@media (max-width:640px){
+  /* Hero CTAs: stack full-width instead of squeezing side by side */
+  .hero-actions{flex-direction:column;align-items:center;width:100%;gap:10px}
+  .hero-actions .button{width:100%;max-width:320px;justify-content:center;min-height:50px}
+  .hero-note{font-size:11.5px;line-height:1.5;max-width:300px;margin-left:auto;margin-right:auto}
+
+  /* Waitlist: comfortable stacked form with 48px touch targets */
+  .waitlist-form{max-width:100%}
+  .waitlist-row{flex-direction:column;gap:10px}
+  .waitlist-input{width:100%;padding:15px 20px;font-size:16px}   /* 16px stops iOS zoom-on-focus */
+  .waitlist-submit{width:100%;justify-content:center;height:50px;padding:0 20px;font-size:14px}
+  .waitlist-submit .btn-arrow{width:28px;height:28px}
+  .waitlist-fineprint{max-width:340px;margin-left:auto;margin-right:auto}
+
+  /* Closing card breathes better with less padding on small screens */
+  .closing-card{padding:40px 22px}
+
+  /* Toasts hug the screen edges with a small inset */
+  .toast-viewport{width:calc(100% - 20px)}
+}
+
+@media (max-width:400px){
+  .hero-actions .button{font-size:13px}
+  .closing-card{padding:34px 18px}
+  .waitlist-submit{font-size:13.5px}
 }
