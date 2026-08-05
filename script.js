@@ -1219,16 +1219,42 @@ if (designFeatureCard) {
     setTimeout(remove, 600); // belt-and-braces if transitionend never fires
   }
 
+  // Toasts still animating out are marked leaving but linger in the DOM briefly.
+  // Count only the live ones so eviction can't spin on a toast that's already going.
+  function liveToasts(host) {
+    return Array.from(host.children).filter(t => t.dataset.leaving !== 'true');
+  }
+
   function showToast(options) {
     const opts = typeof options === 'string' ? { message: options } : options || {};
     const variant = ICONS[opts.variant] ? opts.variant : 'info';
     const duration = opts.duration === 0 ? 0 : Number(opts.duration) || DEFAULT_DURATION;
     const host = getViewport();
 
-    while (host.children.length >= MAX_VISIBLE) dismiss(host.firstElementChild);
+    // De-dupe: if an identical toast is already on screen (e.g. the user mashes
+    // a button), don't stack a copy and don't restart its timer — just give a
+    // small nudge. The existing toast keeps its original countdown so it always
+    // disappears exactly when its progress line ends.
+    const signature = variant + '|' + (opts.title || '') + '|' + (opts.message || '');
+    const existing = liveToasts(host).find(t => t.dataset.sig === signature);
+    if (existing) {
+      existing.classList.remove('is-bumped');
+      void existing.offsetWidth; // force reflow so the animation can replay
+      existing.classList.add('is-bumped');
+      return;
+    }
+
+    // Evict oldest toasts beyond the cap. Remove synchronously here (rather than
+    // via the animated dismiss) so the DOM shrinks immediately — otherwise this
+    // loop could never terminate.
+    let live = liveToasts(host);
+    while (live.length >= MAX_VISIBLE) {
+      live.shift().remove();
+    }
 
     const toast = document.createElement('div');
     toast.className = 'toast toast-' + variant;
+    toast.dataset.sig = signature;
     toast.style.setProperty('--toast-duration', duration + 'ms');
 
     const icon = document.createElement('span');

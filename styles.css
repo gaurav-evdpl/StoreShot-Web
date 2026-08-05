@@ -481,6 +481,8 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 .toast-progress i{display:block;height:100%;transform-origin:left center;background:linear-gradient(90deg,var(--toast-accent),rgba(97,212,238,.75));animation:toast-countdown var(--toast-duration,5200ms) linear forwards}
 @keyframes toast-countdown{from{transform:scaleX(1)}to{transform:scaleX(0)}}
 .toast:hover .toast-progress i,.toast:focus-within .toast-progress i{animation-play-state:paused}
+.toast.is-bumped{animation:toast-bump .3s cubic-bezier(.22,1,.36,1)}
+@keyframes toast-bump{0%{transform:translateY(0) scale(1)}40%{transform:translateY(-3px) scale(1.02)}100%{transform:translateY(0) scale(1)}}
 
 @media (max-width:800px){
   .toast-viewport{top:84px;width:calc(100% - 24px)}
@@ -489,6 +491,7 @@ a:focus-visible,button:focus-visible,input:focus-visible,textarea:focus-visible,
 @media (prefers-reduced-motion:reduce){
   .toast{transition:opacity .01ms linear;transform:none}
   .toast.is-visible,.toast.is-leaving{transform:none}
+  .toast.is-bumped{animation:none}
   .toast-progress i{animation:none;transform:scaleX(1)}
 }
 
